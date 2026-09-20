@@ -382,11 +382,15 @@
     const summary = document.getElementById('summary');
     const vehicleField = document.getElementById('vehicleName');
     const summaryField = document.getElementById('orderSummaryField');
+    const form = document.getElementById('orderForm');
+    const customPaint = document.getElementById('customPaint');
+    const paintContainer = document.getElementById('paintCodeContainer');
+    const paintField = document.getElementById('paintRequest');
 
-    window.onload = function () {
-        if (sessionStorage.getItem("verified") === "true") {
-            document.getElementById("verificationModal").remove();
-        }
+    function getTurnstileToken() {
+        return window.turnstile && typeof window.turnstile.getResponse === 'function'
+            ? window.turnstile.getResponse()
+            : null;
     }
 
     function resetTurnstile() {
