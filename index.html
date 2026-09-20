@@ -8,7 +8,12 @@
     <style>
         body {
             font-family: Arial, sans-serif;
-            background: #111;
+            background: linear-gradient(
+                    180deg,
+                    #050505,
+                    #111111,
+                    #0a0a0a
+            );
             color: #fff;
             max-width: 1200px;
             margin: auto;
@@ -37,21 +42,35 @@
         }
 
         .card {
-            background: #262626;
-            border: 2px solid #333;
-            border-radius: 12px;
-            cursor: pointer;
-            overflow: hidden
+            background: #1a1a1a;
+            border: 1px solid #333;
+            border-radius: 16px;
+            overflow: hidden;
+            transition: 0.25s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-6px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
         }
 
         .card.selected {
-            border-color: #e11d48
+            border-color: #cf1738;
+            box-shadow: 0 0 0 2px #cf1738;
+        }
+
+        .card.selected::after {
+            content: "SELECTED";
+            display: block;
+            background: #cf1738;
+            text-align: center;
+            padding: 10px;
+            font-weight: bold;
         }
 
         .card img {
-            width: 100%;
-            height: 180px;
-            object-fit: cover
+            height: 240px;
+            object-fit: cover;
         }
 
         .card h3, .card p {
@@ -62,113 +81,248 @@
             padding: 8px 0
         }
 
+
+        .sidebar-actions{
+            display:flex;
+            flex-direction:column;
+            gap:12px;
+            margin-top:20px;
+        }
+
+        .sidebar-actions button{
+            width:100%;
+            padding:16px;
+            border:none;
+            border-radius:12px;
+            font-size:16px;
+            font-weight:600;
+            cursor:pointer;
+        }
+
+        .reset{
+            background:#2e2e2e;
+            color:white;
+        }
+
+        .reset:hover{
+            background:#3a3a3a;
+        }
+
+        .submit{
+            background:linear-gradient(
+                    135deg,
+                    #cf1738,
+                    #ff3658
+            );
+            color:white;
+        }
+
+        .submit:hover{
+            transform:translateY(-2px);
+        }
+
+        .paint-notice {
+            background: #14213d;
+            border-left: 4px solid #3b82f6;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            color: #fff;
+        }
+
+        .hero {
+            text-align: center;
+            padding: 60px 20px;
+            margin-bottom: 20px;
+        }
+
+        .hero h1 {
+            font-size: 48px;
+            margin-bottom: 10px;
+        }
+
+        .hero p {
+            color: #aaa;
+            font-size: 18px;
+        }
+
+        .builder-layout {
+            display: grid;
+            grid-template-columns:1fr 350px;
+            gap: 24px;
+            align-items: start;
+        }
+
+        .price-sidebar {
+            position: sticky;
+            top: 20px;
+        }
+
+        .price-panel {
+            background: #181818;
+            border: 1px solid #2f2f2f;
+            border-radius: 16px;
+            padding: 24px;
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.35);
+        }
+
+        .price-panel h3 {
+            margin-top: 0;
+            margin-bottom: 16px;
+            font-size: 24px;
+        }
+
+        .sidebar-total {
+            font-size: 48px;
+            font-weight: 700;
+            letter-spacing: -1px;
+            color: #22c55e;
+        }
+
         .summary {
             background: #0f0f0f;
+            border: 1px solid #222;
+            border-radius: 12px;
             padding: 16px;
-            border-radius: 10px;
-            white-space: pre-wrap
+            line-height: 1.5;
+            white-space: pre-line;
         }
 
-        .total {
-            font-size: 32px;
-            color: #22c55e;
-            font-weight: bold
+        .sidebar-label{
+            color:#999;
+            text-transform:uppercase;
+            letter-spacing:2px;
+            font-size:12px;
+            margin-bottom:8px;
         }
 
-        .actions {
-            display: flex;
-            gap: 10px
-        }
+        @media (max-width: 900px) {
+            .builder-layout {
+                grid-template-columns:1fr;
+            }
 
-        .actions button {
-            flex: 1;
-            padding: 14px;
-            border: none;
-            border-radius: 8px;
-            color: #fff;
-            font-weight: bold
-        }
-
-        .reset {
-            background: #555
-        }
-
-        .submit {
-            background: #cf1738
+            .price-sidebar {
+                position: static;
+            }
         }
     </style>
 </head>
 <body>
-<h1>Custom Vehicle Configurator</h1>
+<div class="hero">
+    <h1>Build Your Dream Mini Supercar</h1>
+    <p>
+        Handcrafted electric junior vehicles inspired by legendary icons.
+    </p>
+</div>
 <form action="https://formspree.io/f/YOUR_FORMSPREE_ID" method="POST">
     <input type="hidden" name="vehicle" id="vehicleName">
     <input type="hidden" name="order_summary" id="orderSummaryField">
-    <div class="section"><h2>Customer Details</h2>
-        <label>
-            <input name="name" placeholder="Full Name" required>
-        </label>
-        <label>
-            <input type="email" name="email" placeholder="Email" required>
-        </label>
-        <label>
-            <input name="phone" placeholder="Phone / WhatsApp" required>
-        </label>
-    </div>
-    <div class="section"><h2>Select Vehicle</h2>
-        <div class="grid" id="vehicles">
-            <div class="card" data-name="Porsche 911" data-price="175000"><img src="images/911.png" alt="Porsche 911">
-                <h3>Porsche 911</h3>
-                <p>R175,000</p></div>
-            <div class="card" data-name="Ferrari F40" data-price="190000"><img src="images/ferrari_f40.png"
-                                                                                 alt="Ferrari F40">
-                <h3>Ferrari F40</h3>
-                <p>R190,000</p></div>
-            <div class="card" data-name="Nissan R34" data-price="190000"><img src="images/nissan_r34.png"
-                                                                                alt="Nissan R34">
-                <h3>Nissan R34</h3>
-                <p>R190,000</p></div>
-            <div class="card" data-name="Toyota AE86" data-price="155000"><img src="images/toyota_ae86.png"
-                                                                                 alt="Toyota AE86">
-                <h3>Toyota AE86</h3>
-                <p>R155,000</p></div>
-            <div class="card" data-name="Mazda RX7" data-price="155000"><img src="images/mazda_rx7.png"
-                                                                               alt="Mazda RX7">
-                <h3>Mazda RX7</h3>
-                <p>R155,000</p></div>
-        </div>
-    </div>
-    <div class="section"><h2>Customization</h2>
-        <div class='option'><label><input type='checkbox' class='addon' data-name='Custom Paint' data-price='25000'>
-            Custom Paint (+R25,000)</label></div>
-        <div class='option'><label><input type='checkbox' class='addon' data-name='Racing Decal' data-price='25000'>
-            Racing Decal (+R25,000)</label></div>
-        <div class='option'><label><input type='checkbox' class='addon' data-name='Custom Wheels' data-price='40000'>
-            Custom Wheels (+R40,000)</label></div>
-        <div class='option'><label><input type='checkbox' class='addon' data-name='Custom Interior' data-price='40000'>
-            Custom Interior (+R40,000)</label></div>
-        <div class='option'><label><input type='checkbox' class='addon' data-name='Extra Battery' data-price='25000'>
-            Extra Battery (+R25,000)</label></div>
-        <div class='option'><label><input type='checkbox' class='addon' data-name='Duo Seating' data-price='40000'> Duo
-            Seating (+R40,000)</label></div>
-        <label>
-            <input name='paint_request' placeholder='Paint code or color request'>
-        </label><label>
+    <div class="builder-layout">
+        <div class="builder-main">
+            <div class="section"><h2>Select Vehicle</h2>
+                <div class="grid" id="vehicles">
+                    <div class="card" data-name="Porsche 911" data-price="175000"><img src="images/911.png"
+                                                                                       alt="Porsche 911">
+                        <h3>Porsche 911</h3>
+                        <p>R175,000</p></div>
+                    <div class="card" data-name="Ferrari F40" data-price="190000"><img src="images/ferrari_f40.png"
+                                                                                       alt="Ferrari F40">
+                        <h3>Ferrari F40</h3>
+                        <p>R190,000</p></div>
+                    <div class="card" data-name="Nissan R34" data-price="190000"><img src="images/nissan_r34.png"
+                                                                                      alt="Nissan R34">
+                        <h3>Nissan R34</h3>
+                        <p>R190,000</p></div>
+                    <div class="card" data-name="Toyota AE86" data-price="155000"><img src="images/toyota_ae86.png"
+                                                                                       alt="Toyota AE86">
+                        <h3>Toyota AE86</h3>
+                        <p>R155,000</p></div>
+                    <div class="card" data-name="Mazda RX7" data-price="155000"><img src="images/mazda_rx7.png"
+                                                                                     alt="Mazda RX7">
+                        <h3>Mazda RX7</h3>
+                        <p>R155,000</p></div>
+                </div>
+            </div>
+            <div class="paint-notice">
+                <strong>Standard Paint Included</strong><br>
+                All vehicles come with standard Silver paint at no extra cost.
+                Select "Custom Paint" if you'd like us to match a specific paint code or color.
+            </div>
+            <div class="section"><h2>Customization</h2>
+                <div class='option'><label><input type='checkbox' class='addon' data-name='Custom Paint'
+                                                  data-price='25000'
+                                                  id="customPaint">
+                    Custom Paint (+R25,000)</label></div>
+                <label id="paintCodeContainer" style="display:none;">
+                    <input name='paint_request' placeholder='Paint code or color request' id="paintRequest">
+                </label>
+                <div class='option'><label><input type='checkbox' class='addon' data-name='Racing Decal'
+                                                  data-price='25000'>
+                    Racing Decal (+R25,000)</label></div>
+                <div class='option'><label><input type='checkbox' class='addon' data-name='Custom Wheels'
+                                                  data-price='40000'>
+                    Custom Wheels (+R40,000)</label></div>
+                <div class='option'><label><input type='checkbox' class='addon' data-name='Custom Interior'
+                                                  data-price='40000'>
+                    Custom Interior (+R40,000)</label></div>
+                <div class='option'><label><input type='checkbox' class='addon' data-name='Extra Battery'
+                                                  data-price='25000'>
+                    Extra Battery (+R25,000)</label></div>
+                <div class='option'><label><input type='checkbox' class='addon' data-name='Duo Seating'
+                                                  data-price='40000'> Duo
+                    Seating (+R40,000)</label></div>
+                <label>
 <textarea name='notes'
           placeholder='Additional notes'></textarea>
-        </label>
-        <div class='total' id='total'>$4,500</div>
-        <div class='summary' id='summary'></div>
+                </label>
+            </div>
+            <div class="section"><h2>Contact Information</h2>
+                <p class="section-subtitle">
+                    We'll contact you to discuss your build and provide a quotation.
+                </p>
+                <label>
+                    <input name="name" placeholder="Full Name" required>
+                </label>
+                <label>
+                    <input type="email" name="email" placeholder="Email" required>
+                </label>
+                <label>
+                    <input name="phone" placeholder="Phone / WhatsApp" required>
+                </label>
+            </div>
+            <div class='section'><h2>Verification</h2>
+                <div class='cf-turnstile' data-sitekey='YOUR_TURNSTILE_SITE_KEY'></div>
+            </div>
+        </div>
+        <aside class="price-sidebar">
+            <div class="price-panel">
+                <h3>Your Build</h3>
+                <p class="sidebar-label">
+                    Estimated Price
+                </p>
+                <div class="sidebar-total" id="total">
+                </div>
+                <div class="summary" id="summary">
+                </div>
+                <div class="sidebar-actions">
+                    <button
+                            type="reset"
+                            class="reset">
+                        Reset Build
+                    </button>
+                    <button
+                            type="submit"
+                            class="submit">
+                        Submit Request
+                    </button>
+                </div>
+            </div>
+        </aside>
     </div>
-    <div class='section'><h2>Verification</h2>
-        <div class='cf-turnstile' data-sitekey='YOUR_TURNSTILE_SITE_KEY'></div>
-    </div>
-    <div class='actions'>
-        <button type='reset' class='reset'>Reset</button>
-        <button type='submit' class='submit'>Submit Order Request</button>
-    </div>
+
 </form>
 <script>
-    let base = 4500;
+    let base = 155000;
     const cards = document.querySelectorAll('.card');
     const addons = document.querySelectorAll('.addon');
     const total = document.getElementById('total');
@@ -186,7 +340,8 @@
             }
         });
         total.textContent = 'R' + t.toLocaleString();
-        let txt = 'Vehicle: ' + vehicleField.value + 'Options: ' + (opts.join(', ') || 'None') + 'EstimatedTotal: R' + t.toLocaleString();
+        let txt =
+            'Vehicle: ' + vehicleField.value + '\nSelected Options:\n' + (opts.join('\n') || '') + '\nTotal: R' + t.toLocaleString();
         summary.textContent = txt;
         summaryField.value = txt;
     }
@@ -207,12 +362,41 @@
         setTimeout(() => {
             cards.forEach(x => x.classList.remove('selected'));
             cards[0].classList.add('selected');
-            base = 4500;
+            base = 155000;
             vehicleField.value = 'Porsche 911';
             update();
         }, 0);
     });
     vehicleField.value = 'Porsche 911';
+
+    const customPaint =
+        document.getElementById("customPaint");
+
+    const paintContainer =
+        document.getElementById(
+            "paintCodeContainer"
+        );
+
+    const paintField =
+        document.getElementById(
+            "paintRequest"
+        );
+
+    customPaint.addEventListener(
+        "change",
+        function () {
+            if (this.checked) {
+                paintContainer.style.display =
+                    "block";
+                paintField.required = true;
+            } else {
+                paintContainer.style.display =
+                    "none";
+                paintField.required = false;
+                paintField.value = "";
+            }
+        }
+    );
     update();
 </script>
 </body>
