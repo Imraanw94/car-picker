@@ -196,48 +196,46 @@
             margin-bottom: 8px;
         }
 
-        .honeypot{
-            position:absolute;
-            left:-9999px;
-            opacity:0;
-            pointer-events:none;
+        .honeypot {
+            position: absolute;
+            left: -9999px;
+            opacity: 0;
+            pointer-events: none;
         }
 
-        #verificationModal{
-            position:fixed;
-            inset:0;
-            background:rgba(0,0,0,0.75);
-            backdrop-filter:blur(8px);
-            display:flex;
-            justify-content:center;
-            align-items:center;
-            z-index:9999;
+        #verificationModal {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.75);
+            backdrop-filter: blur(8px);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
         }
 
-        .verification-card{
-            width:90%;
-            max-width:420px;
-            background:#1a1a1a;
-            border:1px solid #333;
-            border-radius:20px;
-            padding:30px;
-            text-align:center;
-            box-shadow:
-                    0 25px 60px rgba(0,0,0,0.5);
+        .verification-card {
+            width: 90%;
+            max-width: 420px;
+            background: #1a1a1a;
+            border: 1px solid #333;
+            border-radius: 20px;
+            padding: 30px;
+            text-align: center;
+            box-shadow: 0 25px 60px rgba(0, 0, 0, 0.5);
         }
 
-        .verification-card h2{
-            margin-bottom:10px;
+        .verification-card h2 {
+            margin-bottom: 10px;
         }
 
-        .verification-card p{
-            color:#aaa;
-            margin-bottom:20px;
+        .verification-card p {
+            color: #aaa;
+            margin-bottom: 20px;
         }
 
-        #verificationModal{
-            transition:
-                    opacity 0.4s ease;
+        #verificationModal {
+            transition: opacity 0.4s ease;
         }
 
         @media (max-width: 900px) {
@@ -386,158 +384,158 @@
     const summaryField = document.getElementById('orderSummaryField');
 
     window.onload = function () {
-        if (sessionStorage.getItem("verified") === "true" ) {
+        if (sessionStorage.getItem("verified") === "true") {
             document.getElementById("verificationModal").remove();
         }
     }
 
-function resetTurnstile() {
-    if (window.turnstile && typeof window.turnstile.reset === 'function') {
-        window.turnstile.reset();
-    }
-}
-
-function update() {
-    let t = base;
-    let opts = [];
-
-    addons.forEach(a => {
-        if (a.checked) {
-            t += Number(a.dataset.price);
-            opts.push(a.dataset.name);
+    function resetTurnstile() {
+        if (window.turnstile && typeof window.turnstile.reset === 'function') {
+            window.turnstile.reset();
         }
-    });
-
-    total.textContent = 'R' + t.toLocaleString();
-
-    let txt =
-        'Vehicle: ' + (vehicleField.value || 'None') + '\nSelected Options:\n' + (opts.join('\n') || 'None') + '\nTotal: R' + t.toLocaleString();
-
-    summary.textContent = txt;
-    summaryField.value = txt;
-}
-
-function resetBuilder() {
-    form.reset();
-
-    cards.forEach(x => x.classList.remove('selected'));
-    cards[0].classList.add('selected');
-
-    base = Number(cards[0].dataset.price);
-    vehicleField.value = cards[0].dataset.name;
-
-    addons.forEach(a => {
-        a.checked = false;
-    });
-
-    customPaint.checked = false;
-    paintContainer.style.display = 'none';
-    paintField.required = false;
-    paintField.value = '';
-
-    update();
-}
-
-window.onload = function () {
-    const modal = document.getElementById('verificationModal');
-    if (sessionStorage.getItem('verified') === 'true' && modal) {
-        modal.remove();
-    }
-};
-
-function turnstileVerified(token) {
-    const modal = document.getElementById('verificationModal');
-
-    sessionStorage.setItem('verified', 'true');
-
-    if (modal) {
-        modal.style.opacity = '0';
-        setTimeout(() => modal.remove(), 400);
-    }
-}
-
-cards.forEach(c => c.addEventListener('click', () => {
-    cards.forEach(x => x.classList.remove('selected'));
-    c.classList.add('selected');
-    base = Number(c.dataset.price);
-    vehicleField.value = c.dataset.name;
-    update();
-}));
-
-addons.forEach(a => a.addEventListener('change', update));
-
-document.querySelector('button[type=reset]').addEventListener('click', e => {
-    if (!confirm('Reset configuration?')) {
-        e.preventDefault();
-        return;
     }
 
-    resetBuilder();
-});
+    function update() {
+        let t = base;
+        let opts = [];
 
-customPaint.addEventListener('change', function () {
-    if (this.checked) {
-        paintContainer.style.display = 'block';
-        paintField.required = true;
-    } else {
+        addons.forEach(a => {
+            if (a.checked) {
+                t += Number(a.dataset.price);
+                opts.push(a.dataset.name);
+            }
+        });
+
+        total.textContent = 'R' + t.toLocaleString();
+
+        let txt =
+            'Vehicle: ' + (vehicleField.value || 'None') + '\nSelected Options:\n' + (opts.join('\n') || 'None') + '\nTotal: R' + t.toLocaleString();
+
+        summary.textContent = txt;
+        summaryField.value = txt;
+    }
+
+    function resetBuilder() {
+        form.reset();
+
+        cards.forEach(x => x.classList.remove('selected'));
+        cards[0].classList.add('selected');
+
+        base = Number(cards[0].dataset.price);
+        vehicleField.value = cards[0].dataset.name;
+
+        addons.forEach(a => {
+            a.checked = false;
+        });
+
+        customPaint.checked = false;
         paintContainer.style.display = 'none';
         paintField.required = false;
         paintField.value = '';
-    }
-});
 
-document.getElementById('formLoadedAt').value = Date.now();
-
-form.addEventListener('submit', async function (e) {
-    e.preventDefault();
-
-    const token = getTurnstileToken();
-
-    if (!token) {
-        alert('Please complete verification.');
-        return;
+        update();
     }
 
-    const payload = {
-        name: form.name.value,
-        email: form.email.value,
-        phone: form.phone.value,
-        vehicle: vehicleField.value,
-        options: summary.textContent,
-        paintRequest: paintField.value,
-        notes: form.notes.value,
-        total: total.textContent,
-        website: document.getElementById('website').value,
-        loadedAt: document.getElementById('formLoadedAt').value,
-        turnstileToken: token
+    window.onload = function () {
+        const modal = document.getElementById('verificationModal');
+        if (sessionStorage.getItem('verified') === 'true' && modal) {
+            modal.remove();
+        }
     };
 
-    const response = await fetch(
-        'https://script.google.com/macros/s/AKfycbx5pfgIK3N7pcVBOCswEMMhky_uucrjEWisbjaRqSU8ashwj20XDgSOcwpLcqM3HNY/exec',
-        {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'Accept': 'application/json'
-            },
-            body: JSON.stringify(payload)
+    function turnstileVerified(token) {
+        const modal = document.getElementById('verificationModal');
+
+        sessionStorage.setItem('verified', 'true');
+
+        if (modal) {
+            modal.style.opacity = '0';
+            setTimeout(() => modal.remove(), 400);
         }
-    );
-
-    if (response.ok) {
-        alert('Order request submitted.');
-        resetTurnstile();
-        resetBuilder();
-    } else {
-        alert('Submission failed.');
     }
-});
 
-cards.forEach(x => x.classList.remove('selected'));
-cards[0].classList.add('selected');
-base = Number(cards[0].dataset.price);
-vehicleField.value = cards[0].dataset.name;
-update();
+    cards.forEach(c => c.addEventListener('click', () => {
+        cards.forEach(x => x.classList.remove('selected'));
+        c.classList.add('selected');
+        base = Number(c.dataset.price);
+        vehicleField.value = c.dataset.name;
+        update();
+    }));
+
+    addons.forEach(a => a.addEventListener('change', update));
+
+    document.querySelector('button[type=reset]').addEventListener('click', e => {
+        if (!confirm('Reset configuration?')) {
+            e.preventDefault();
+            return;
+        }
+
+        resetBuilder();
+    });
+
+    customPaint.addEventListener('change', function () {
+        if (this.checked) {
+            paintContainer.style.display = 'block';
+            paintField.required = true;
+        } else {
+            paintContainer.style.display = 'none';
+            paintField.required = false;
+            paintField.value = '';
+        }
+    });
+
+    document.getElementById('formLoadedAt').value = Date.now();
+
+    form.addEventListener('submit', async function (e) {
+        e.preventDefault();
+
+        const token = getTurnstileToken();
+
+        if (!token) {
+            alert('Please complete verification.');
+            return;
+        }
+
+        const payload = {
+            name: form.name.value,
+            email: form.email.value,
+            phone: form.phone.value,
+            vehicle: vehicleField.value,
+            options: summary.textContent,
+            paintRequest: paintField.value,
+            notes: form.notes.value,
+            total: total.textContent,
+            website: document.getElementById('website').value,
+            loadedAt: document.getElementById('formLoadedAt').value,
+            turnstileToken: token
+        };
+
+        const response = await fetch(
+            'https://script.google.com/macros/s/AKfycbwvylPuiD9r709Srs3RU48fzx9ML8rjKV_GTp2ROhY8oi1VTwIdTFwOEctqAKzMloyk/exec',
+            {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json'
+                },
+                body: JSON.stringify(payload)
+            }
+        );
+
+        if (response.ok) {
+            alert('Order request submitted.');
+            resetTurnstile();
+            resetBuilder();
+        } else {
+            alert('Submission failed.');
+        }
+    });
+
+    cards.forEach(x => x.classList.remove('selected'));
+    cards[0].classList.add('selected');
+    base = Number(cards[0].dataset.price);
+    vehicleField.value = cards[0].dataset.name;
+    update();
 </script>
 </body>
 </html>
