@@ -394,7 +394,8 @@
     }
 
     function resetTurnstile() {
-        if (window.turnstile && typeof window.turnstile.reset === 'function') {
+        const widgetContainer = document.querySelector('.cf-turnstile');
+        if (widgetContainer && window.turnstile && typeof window.turnstile.reset === 'function') {
             window.turnstile.reset();
         }
     }
