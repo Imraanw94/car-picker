@@ -394,8 +394,7 @@
     }
 
     function resetTurnstile() {
-        const widgetContainer = document.querySelector('.cf-turnstile');
-        if (widgetContainer && window.turnstile && typeof window.turnstile.reset === 'function') {
+        if (window.turnstile && typeof window.turnstile.reset === 'function') {
             window.turnstile.reset();
         }
     }
@@ -444,7 +443,7 @@
     window.onload = function () {
         const modal = document.getElementById('verificationModal');
         if (sessionStorage.getItem('verified') === 'true' && modal) {
-            modal.remove();
+            modal.style.display = 'none';
         }
     };
 
@@ -455,7 +454,7 @@
 
         if (modal) {
             modal.style.opacity = '0';
-            setTimeout(() => modal.remove(), 400);
+            modal.style.pointerEvents = 'none';
         }
     }
 
