@@ -20,19 +20,55 @@
             padding: 20px
         }
 
-        .section {
-            background: #1c1c1c;
-            padding: 20px;
-            border-radius: 12px;
-            margin-bottom: 20px
+        .section{
+            background:
+                    linear-gradient(
+                            180deg,
+                            #1c1c1c,
+                            #171717
+                    );
+            border:1px solid #2b2b2b;
+            border-radius:20px;
+            padding:30px;
+            margin-bottom: 20px;
         }
 
-        input, textarea {
-            width: 100%;
-            padding: 10px;
-            margin: 6px 0 12px;
-            border-radius: 8px;
-            border: none
+        .section h2{
+            font-size:28px;
+            margin-bottom:24px;
+        }
+
+        .section-subtitle{
+            color:#999;
+            margin-top:-10px;
+            margin-bottom:20px;
+        }
+
+        textarea{
+            width: stretch;
+            margin-top: 10px;
+        }
+
+        input,
+        textarea{
+            background:#101010;
+            border:1px solid #2e2e2e;
+            color:white;
+            padding:14px;
+            border-radius:12px;
+        }
+
+        input:focus,
+        textarea:focus{
+            outline:none;
+            border-color:#cf1738;
+            box-shadow:
+                    0 0 0 3px rgba(
+                            207,
+                            23,
+                            56,
+                            0.15
+                    );
         }
 
         .grid {
@@ -77,10 +113,73 @@
             padding: 0 12px
         }
 
-        .option {
-            padding: 8px 0
+        .options-grid{
+            display:grid;
+            grid-template-columns:
+        repeat(auto-fit,minmax(280px,1fr));
+            gap:16px;
         }
 
+        .option-card{
+            background:#161616;
+            border:1px solid #2f2f2f;
+            border-radius:14px;
+            padding:18px;
+            transition:0.2s ease;
+        }
+
+        .option-card:hover{
+            border-color:#555;
+            transform:translateY(-2px);
+        }
+
+        .option-card label{
+            display:flex;
+            align-items:flex-start;
+            gap:14px;
+            cursor:pointer;
+            margin:0;
+        }
+
+        .option-card input[type="checkbox"]{
+            width:20px;
+            height:20px;
+            margin-top:2px;
+            flex-shrink:0;
+        }
+
+        .option-title{
+            font-weight:600;
+            font-size:16px;
+            color:#fff;
+        }
+
+        .option-price{
+            color:#22c55e;
+            font-size:14px;
+            margin-top:4px;
+        }
+
+        .option-description{
+            color:#999;
+            font-size:13px;
+            margin-top:4px;
+        }
+
+        .option-card:has(input:checked){
+
+            border-color:#cf1738;
+
+            background:
+                    linear-gradient(
+                            135deg,
+                            rgba(207,23,56,0.15),
+                            rgba(255,54,88,0.05)
+                    );
+
+            box-shadow:
+                    0 0 0 1px #cf1738;
+        }
 
         .sidebar-actions {
             display: flex;
@@ -128,6 +227,26 @@
             border-radius: 8px;
             margin-bottom: 20px;
             color: #fff;
+        }
+
+        .paint-code-container{
+
+            margin-top:16px;
+            padding-top:16px;
+
+            border-top:1px solid #333;
+        }
+
+        .paint-code-container input{
+
+            margin-bottom:8px;
+        }
+
+        .paint-code-container small{
+
+            color:#999;
+            display:block;
+            line-height:1.4;
         }
 
         .hero {
@@ -258,12 +377,11 @@
     </div>
 </div>
 <div class="hero">
-    <h1>Build Your Dream Mini Supercar</h1>
+    <h1>Build Your Mini Supercar</h1>
     <p>
         Handcrafted electric junior vehicles inspired by legendary icons.
     </p>
 </div>
-<!--https://script.google.com/macros/s/AKfycbx5pfgIK3N7pcVBOCswEMMhky_uucrjEWisbjaRqSU8ashwj20XDgSOcwpLcqM3HNY/exec-->
 <form id="orderForm" method="POST">
     <input type="hidden" name="vehicle" id="vehicleName">
     <input type="hidden" name="order_summary" id="orderSummaryField">
@@ -299,28 +417,124 @@
                 Select "Custom Paint" if you'd like us to match a specific paint code or color.
             </div>
             <div class="section"><h2>Customization</h2>
-                <div class='option'><label><input type='checkbox' class='addon' data-name='Custom Paint'
-                                                  data-price='25000'
-                                                  id="customPaint">
-                    Custom Paint (+R25,000)</label></div>
-                <label id="paintCodeContainer" style="display:none;">
-                    <input name='paint_request' placeholder='Paint code or color request' id="paintRequest">
-                </label>
-                <div class='option'><label><input type='checkbox' class='addon' data-name='Racing Decal'
-                                                  data-price='25000'>
-                    Racing Decal (+R25,000)</label></div>
-                <div class='option'><label><input type='checkbox' class='addon' data-name='Custom Wheels'
-                                                  data-price='40000'>
-                    Custom Wheels (+R40,000)</label></div>
-                <div class='option'><label><input type='checkbox' class='addon' data-name='Custom Interior'
-                                                  data-price='40000'>
-                    Custom Interior (+R40,000)</label></div>
-                <div class='option'><label><input type='checkbox' class='addon' data-name='Extra Battery'
-                                                  data-price='25000'>
-                    Extra Battery (+R25,000)</label></div>
-                <div class='option'><label><input type='checkbox' class='addon' data-name='Duo Seating'
-                                                  data-price='40000'> Duo
-                    Seating (+R40,000)</label></div>
+                <div class="options-grid">
+                    <div class="option-card">
+                        <label>
+                            <input
+                                    type="checkbox"
+                                    class="addon"
+                                    id="customPaint"
+                                    data-name="Custom Paint"
+                                    data-price="25000">
+                            <div>
+                                <div class="option-title">
+                                    Custom Paint Match
+                                </div>
+                                <div class="option-price">
+                                    +R25,000
+                                </div>
+                                <div class="option-description">
+                                    Match any manufacturer paint code.
+                                </div>
+                            </div>
+                        </label>
+                        <div
+                                id="paintCodeContainer"
+                                class="paint-code-container"
+                                style="display:none;">
+                            <label for="paintRequest">Paint Code or Color</label><input
+                                    type="text"
+                                    id="paintRequest"
+                                    name="paint_request"
+                                    placeholder="Enter paint code or color">
+                            <small>
+                                Examples:
+                                Porsche GT Silver,
+                                Ferrari Rosso Corsa,
+                            </small>
+                        </div>
+                    </div>
+                    <div class="option-card">
+                        <label>
+                            <input
+                                    type="checkbox"
+                                    class="addon"
+                                    data-name="Racing Decal"
+                                    data-price="25000">
+                            <div>
+                                <div class="option-title">
+                                    Racing Decal Package
+                                </div>
+                                <div class="option-price">
+                                    +R25,000
+                                </div>
+                                <div class="option-description">
+                                    Custom motorsport graphics.
+                                </div>
+                            </div>
+                        </label>
+                    </div>
+                    <div class="option-card">
+                        <label>
+                            <input
+                                    type="checkbox"
+                                    class="addon"
+                                    data-name="Custom Wheels"
+                                    data-price="40000">
+                            <div>
+                                <div class="option-title">
+                                    Premium Wheels
+                                </div>
+                                <div class="option-price">
+                                    +R40,000
+                                </div>
+                            </div>
+                        </label>
+                    </div>
+                    <div class="option-card">
+                        <label>
+                            <input
+                                    type="checkbox"
+                                    class="addon"
+                                    data-name="Custom Interior"
+                                    data-price="40000">
+                            <div>
+                                <div class="option-title">
+                                    Custom Interior
+                                </div>
+                                <div class="option-price">
+                                    +R40,000
+                                </div>
+                            </div>
+                        </label>
+                    </div>
+                    <div class="option-card">
+                        <label>
+                            <input type="checkbox" class="addon" data-name="Extra Battery" data-price="25000">
+                            <div>
+                                <div class="option-title">
+                                    Extra Battery
+                                </div>
+                                <div class="option-price">
+                                    +R25,000
+                                </div>
+                            </div>
+                        </label>
+                    </div>
+                    <div class="option-card">
+                        <label>
+                            <input type="checkbox" class="addon" data-name="Duo Seating" data-price="40000">
+                            <div>
+                                <div class="option-title">
+                                    Duo Seating
+                                </div>
+                                <div class="option-price">
+                                    +R40,000
+                                </div>
+                            </div>
+                        </label>
+                    </div>
+                </div>
                 <label>
 <textarea name='notes'
           placeholder='Additional notes'></textarea>
@@ -331,13 +545,13 @@
                     We'll contact you to discuss your build and provide a quotation.
                 </p>
                 <label>
-                    <input name="name" placeholder="Full Name" required>
+                    <input class="contact-input" name="name" placeholder="Full Name" required>
                 </label>
                 <label>
-                    <input type="email" name="email" placeholder="Email" required>
+                    <input type="email" class="contact-input" name="email" placeholder="Email" required>
                 </label>
                 <label>
-                    <input name="phone" placeholder="Phone / WhatsApp" required>
+                    <input class="contact-input" name="phone" placeholder="Phone / WhatsApp" required>
                 </label>
             </div>
             <div class="honeypot">
@@ -391,12 +605,6 @@
         return window.turnstile && typeof window.turnstile.getResponse === 'function'
             ? window.turnstile.getResponse()
             : null;
-    }
-
-    function resetTurnstile() {
-        if (window.turnstile && typeof window.turnstile.reset === 'function') {
-            window.turnstile.reset();
-        }
     }
 
     function update() {
@@ -533,16 +741,7 @@
 
         alert("Order request submitted.");
 
-        resetTurnstile();
         resetBuilder();
-
-        if (response.ok) {
-            alert('Order request submitted.');
-            resetTurnstile();
-            resetBuilder();
-        } else {
-            alert('Submission failed.');
-        }
     });
 
     cards.forEach(x => x.classList.remove('selected'));
