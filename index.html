@@ -3,334 +3,334 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Custom Vehicle Configurator</title>
+    <title>Vehicle Quote Request</title>
     <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
     <style>
+        :root {
+            --panel: #171717;
+            --panel2: #101010;
+            --border: #2d2d2d;
+            --accent: #cf1738;
+            --muted: #aaa;
+            --text: #fff
+        }
+
+        * {
+            box-sizing: border-box
+        }
+
         body {
             font-family: Arial, sans-serif;
-            background: linear-gradient(
-                    180deg,
-                    #050505,
-                    #111111,
-                    #0a0a0a
-            );
-            color: #fff;
+            background: linear-gradient(180deg, #050505, #111, #080808);
+            color: var(--text);
             max-width: 1200px;
             margin: auto;
             padding: 20px
         }
 
-        .section{
-            background:
-                    linear-gradient(
-                            180deg,
-                            #1c1c1c,
-                            #171717
-                    );
-            border:1px solid #2b2b2b;
-            border-radius:20px;
-            padding:30px;
-            margin-bottom: 20px;
+        .hero {
+            text-align: center;
+            padding: 55px 20px 35px
         }
 
-        .section h2{
-            font-size:28px;
-            margin-bottom:24px;
+        .hero h1 {
+            font-size: 48px;
+            margin: 0 0 10px
         }
 
-        .section-subtitle{
-            color:#999;
-            margin-top:-10px;
-            margin-bottom:20px;
+        .hero p {
+            color: var(--muted);
+            font-size: 18px
         }
 
-        textarea{
-            width: stretch;
-            margin-top: 10px;
-        }
-
-        input,
-        textarea{
-            background:#101010;
-            border:1px solid #2e2e2e;
-            color:white;
-            padding:14px;
-            border-radius:12px;
-        }
-
-        input:focus,
-        textarea:focus{
-            outline:none;
-            border-color:#cf1738;
-            box-shadow:
-                    0 0 0 3px rgba(
-                            207,
-                            23,
-                            56,
-                            0.15
-                    );
-        }
-
-        .grid {
+        .builder-layout {
             display: grid;
-            grid-template-columns:repeat(auto-fit, minmax(260px, 1fr));
+            grid-template-columns:1fr 340px;
+            gap: 24px;
+            align-items: start
+        }
+
+        .section, .quote-panel {
+            background: linear-gradient(180deg, #1c1c1c, #151515);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 28px;
+            margin-bottom: 20px
+        }
+
+        .section h2, .quote-panel h3 {
+            margin: 0 0 8px
+        }
+
+        .section-subtitle {
+            color: var(--muted);
+            margin: 0 0 22px;
+            line-height: 1.5
+        }
+
+        .vehicle-grid {
+            display: grid;
+            grid-template-columns:repeat(2, minmax(0, 1fr));
             gap: 16px
         }
 
-        .card {
+        .vehicle-card {
             background: #1a1a1a;
             border: 1px solid #333;
             border-radius: 16px;
             overflow: hidden;
-            transition: 0.25s ease;
+            transition: .2s
         }
 
-        .card:hover {
-            transform: translateY(-6px);
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+        .vehicle-card:has(.quantity-input:not([value="0"])) {
+            border-color: var(--accent)
         }
 
-        .card.selected {
-            border-color: #cf1738;
-            box-shadow: 0 0 0 2px #cf1738;
-        }
-
-        .card.selected::after {
-            content: "SELECTED";
+        .vehicle-card img {
             display: block;
-            background: #cf1738;
+            width: 100%;
+            height: 250px;
+            object-fit: cover
+        }
+
+        .vehicle-content {
+            padding: 16px
+        }
+
+        .vehicle-content h3 {
+            margin: 0 0 12px
+        }
+
+        .quantity-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 14px
+        }
+
+        .quantity-control {
+            display: flex;
+            align-items: center;
+            border: 1px solid #3b3b3b;
+            border-radius: 10px;
+            overflow: hidden;
+            background: #0f0f0f
+        }
+
+        .quantity-control button {
+            width: 42px;
+            height: 42px;
+            border: 0;
+            background: #292929;
+            color: #fff;
+            font-size: 22px;
+            cursor: pointer
+        }
+
+        .quantity-control button:hover {
+            background: #3a3a3a
+        }
+
+        .quantity-input {
+            width: 54px;
+            height: 42px;
+            border: 0 !important;
+            border-radius: 0 !important;
             text-align: center;
-            padding: 10px;
-            font-weight: bold;
+            padding: 0 !important;
+            background: #111 !important;
+            color: #fff;
+            font-weight: 700;
+            -moz-appearance: textfield
         }
 
-        .card img {
-            height: 240px;
-            object-fit: cover;
+        .quantity-input::-webkit-inner-spin-button, .quantity-input::-webkit-outer-spin-button {
+            -webkit-appearance: none;
+            margin: 0
         }
 
-        .card h3, .card p {
-            padding: 0 12px
+        .vehicle-config {
+            background: #111;
+            border: 1px solid #303030;
+            border-radius: 14px;
+            padding: 18px;
+            margin-top: 14px
         }
 
-        .options-grid{
-            display:grid;
-            grid-template-columns:
-        repeat(auto-fit,minmax(280px,1fr));
-            gap:16px;
+        .vehicle-config h3 {
+            margin: 0 0 16px
         }
 
-        .option-card{
-            background:#161616;
-            border:1px solid #2f2f2f;
-            border-radius:14px;
-            padding:18px;
-            transition:0.2s ease;
+        .config-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
         }
 
-        .option-card:hover{
-            border-color:#555;
-            transform:translateY(-2px);
+        .config-label {
+            font-weight: 700;
+            padding: 13px 0
         }
 
-        .option-card label{
-            display:flex;
-            align-items:flex-start;
-            gap:14px;
-            cursor:pointer;
-            margin:0;
+        .field-label {
+            display: block;
+            color: #ddd;
+            font-weight: 600;
+            margin: 8px 0 8px
         }
 
-        .option-card input[type="checkbox"]{
-            width:20px;
-            height:20px;
-            margin-top:2px;
-            flex-shrink:0;
+        input[type=text], input[type=email], textarea, select {
+            width: 100%;
+            background: var(--panel2);
+            border: 1px solid #333;
+            color: #fff;
+            padding: 13px;
+            border-radius: 12px;
+            font: inherit
         }
 
-        .option-title{
-            font-weight:600;
-            font-size:16px;
-            color:#fff;
+        input:focus, textarea:focus, select:focus {
+            outline: none;
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px rgba(207, 23, 56, .15)
         }
 
-        .option-price{
-            color:#22c55e;
-            font-size:14px;
-            margin-top:4px;
+        textarea {
+            min-height: 110px;
+            resize: vertical
         }
 
-        .option-description{
-            color:#999;
-            font-size:13px;
-            margin-top:4px;
+        .conditional-field {
+            margin-top: 10px;
+            display: contents;
         }
 
-        .option-card:has(input:checked){
+        .hidden {
+            display: none !important
+        }
 
-            border-color:#cf1738;
+        .contact-grid {
+            display: grid;
+            grid-template-columns:1fr 1fr;
+            gap: 14px
+        }
 
-            background:
-                    linear-gradient(
-                            135deg,
-                            rgba(207,23,56,0.15),
-                            rgba(255,54,88,0.05)
-                    );
+        .contact-grid .full {
+            grid-column: 1/-1
+        }
 
-            box-shadow:
-                    0 0 0 1px #cf1738;
+        .choice-grid {
+            display: grid;
+            grid-template-columns:repeat(2, minmax(0, 1fr));
+            gap: 12px
+        }
+
+        .choice {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: #111;
+            border: 1px solid #303030;
+            border-radius: 12px;
+            padding: 14px;
+            cursor: pointer
+        }
+
+        .choice input {
+            width: 18px;
+            height: 18px;
+            margin: 0;
+            accent-color: var(--accent)
+        }
+
+        .choice:has(input:checked) {
+            border-color: var(--accent);
+            background: rgba(207, 23, 56, .08)
+        }
+
+        .subsection {
+            margin-top: 22px;
+            padding-top: 22px;
+            border-top: 1px solid #303030
+        }
+
+        .quote-sidebar {
+            position: sticky;
+            top: 20px
+        }
+
+        .quote-panel h3 {
+            font-size: 24px
+        }
+
+        .summary {
+            background: #0d0d0d;
+            border: 1px solid #272727;
+            border-radius: 12px;
+            padding: 16px;
+            margin-top: 18px;
+            line-height: 1.6;
+            white-space: pre-line;
+            color: #ddd
         }
 
         .sidebar-actions {
             display: flex;
             flex-direction: column;
             gap: 12px;
-            margin-top: 20px;
+            margin-top: 18px
         }
 
         .sidebar-actions button {
             width: 100%;
-            padding: 16px;
-            border: none;
+            padding: 15px;
+            border: 0;
             border-radius: 12px;
-            font-size: 16px;
-            font-weight: 600;
+            color: #fff;
+            font-weight: 700;
             cursor: pointer;
+            font-size: 15px
         }
 
         .reset {
-            background: #2e2e2e;
-            color: white;
-        }
-
-        .reset:hover {
-            background: #3a3a3a;
+            background: #303030
         }
 
         .submit {
-            background: linear-gradient(
-                    135deg,
-                    #cf1738,
-                    #ff3658
-            );
-            color: white;
+            background: linear-gradient(135deg, #cf1738, #ff3658)
         }
 
-        .submit:hover {
-            transform: translateY(-2px);
-        }
-
-        .paint-notice {
-            background: #14213d;
-            border-left: 4px solid #3b82f6;
-            padding: 15px;
-            border-radius: 8px;
-            margin-bottom: 20px;
-            color: #fff;
-        }
-
-        .paint-code-container{
-
-            margin-top:16px;
-            padding-top:16px;
-
-            border-top:1px solid #333;
-        }
-
-        .paint-code-container input{
-
-            margin-bottom:8px;
-        }
-
-        .paint-code-container small{
-
-            color:#999;
-            display:block;
-            line-height:1.4;
-        }
-
-        .hero {
-            text-align: center;
-            padding: 60px 20px;
-            margin-bottom: 20px;
-        }
-
-        .hero h1 {
-            font-size: 48px;
-            margin-bottom: 10px;
-        }
-
-        .hero p {
-            color: #aaa;
-            font-size: 18px;
-        }
-
-        .builder-layout {
-            display: grid;
-            grid-template-columns:1fr 350px;
-            gap: 24px;
-            align-items: start;
-        }
-
-        .price-sidebar {
-            position: sticky;
-            top: 20px;
-        }
-
-        .price-panel {
-            background: #181818;
-            border: 1px solid #2f2f2f;
-            border-radius: 16px;
-            padding: 24px;
-            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.35);
-        }
-
-        .price-panel h3 {
-            margin-top: 0;
-            margin-bottom: 16px;
-            font-size: 24px;
-        }
-
-        .sidebar-total {
-            font-size: 48px;
-            font-weight: 700;
-            letter-spacing: -1px;
-            color: #22c55e;
-        }
-
-        .summary {
-            background: #0f0f0f;
-            border: 1px solid #222;
-            border-radius: 12px;
-            padding: 16px;
-            line-height: 1.5;
-            white-space: pre-line;
-        }
-
-        .sidebar-label {
+        .sidebar-note {
             color: #999;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-            font-size: 12px;
-            margin-bottom: 8px;
+            font-size: 13px;
+            line-height: 1.5;
+            margin-top: 15px
+        }
+
+        .validation {
+            color: #ff9aab;
+            font-size: 14px;
+            margin-top: 12px;
+            display: none
         }
 
         .honeypot {
             position: absolute;
             left: -9999px;
             opacity: 0;
-            pointer-events: none;
+            pointer-events: none
         }
 
         #verificationModal {
             position: fixed;
             inset: 0;
-            background: rgba(0, 0, 0, 0.75);
+            background: rgba(0, 0, 0, .78);
             backdrop-filter: blur(8px);
             display: flex;
             justify-content: center;
             align-items: center;
             z-index: 9999;
+            transition: opacity .4s
         }
 
         .verification-card {
@@ -340,415 +340,422 @@
             border: 1px solid #333;
             border-radius: 20px;
             padding: 30px;
-            text-align: center;
-            box-shadow: 0 25px 60px rgba(0, 0, 0, 0.5);
-        }
-
-        .verification-card h2 {
-            margin-bottom: 10px;
+            text-align: center
         }
 
         .verification-card p {
-            color: #aaa;
-            margin-bottom: 20px;
-        }
-
-        #verificationModal {
-            transition: opacity 0.4s ease;
+            color: #aaa
         }
 
         @media (max-width: 900px) {
             .builder-layout {
-                grid-template-columns:1fr;
+                grid-template-columns:1fr
             }
 
-            .price-sidebar {
-                position: static;
+            .quote-sidebar {
+                position: static
+            }
+
+            .config-grid {
+                grid-template-columns:1fr 1fr
+            }
+
+            .config-label {
+                grid-column: 1/-1;
+                padding-bottom: 0
+            }
+        }
+
+        @media (max-width: 650px) {
+            .vehicle-grid, .choice-grid, .contact-grid, .config-grid {
+                grid-template-columns:1fr
+            }
+
+            .contact-grid .full, .config-label {
+                grid-column: auto
+            }
+
+            .hero h1 {
+                font-size: 36px
+            }
+
+            .vehicle-card img {
+                height: 210px
             }
         }
     </style>
 </head>
 <body>
 <div id="verificationModal">
-    <div class="verification-card">
-        <h2>Welcome</h2>
-        <p>Please complete verification before customizing your vehicle.</p>
+    <div class="verification-card"><h2>Welcome</h2>
+        <p>Please complete verification before requesting a quote.</p>
         <div class="cf-turnstile" data-sitekey="0x4AAAAAAE-JKzIRqEHYjSVr" data-callback="turnstileVerified"></div>
     </div>
 </div>
-<div class="hero">
-    <h1>Build Your Mini Supercar</h1>
-    <p>
-        Handcrafted electric junior vehicles inspired by legendary icons.
-    </p>
-</div>
+<div class="hero"><h1>Build Your Mini Supercars</h1>
+    <p>Select one or more vehicles, configure each one, and request a personalised quote.</p></div>
 <form id="orderForm" method="POST">
-    <input type="hidden" name="vehicle" id="vehicleName">
-    <input type="hidden" name="order_summary" id="orderSummaryField">
+    <input type="hidden" name="vehicles" id="vehiclesField"><input type="hidden" name="order_summary"
+                                                                   id="orderSummaryField">
     <div class="builder-layout">
-        <div class="builder-main">
-            <div class="section"><h2>Select Vehicle</h2>
-                <div class="grid" id="vehicles">
-                    <div class="card" data-name="Porsche 911" data-price="175000"><img src="images/911.png"
-                                                                                       alt="Porsche 911">
-                        <h3>Porsche 911</h3>
-                        <p>R175,000</p></div>
-                    <div class="card" data-name="Ferrari F40" data-price="190000"><img src="images/ferrari_f40.png"
-                                                                                       alt="Ferrari F40">
-                        <h3>Ferrari F40</h3>
-                        <p>R190,000</p></div>
-                    <div class="card" data-name="Nissan R34" data-price="190000"><img src="images/nissan_r34.png"
-                                                                                      alt="Nissan R34">
-                        <h3>Nissan R34</h3>
-                        <p>R190,000</p></div>
-                    <div class="card" data-name="Toyota AE86" data-price="155000"><img src="images/toyota_ae86.png"
-                                                                                       alt="Toyota AE86">
-                        <h3>Toyota AE86</h3>
-                        <p>R155,000</p></div>
-                    <div class="card" data-name="Mazda RX7" data-price="155000"><img src="images/mazda_rx7.png"
-                                                                                     alt="Mazda RX7">
-                        <h3>Mazda RX7</h3>
-                        <p>R155,000</p></div>
-                </div>
-            </div>
-            <div class="paint-notice">
-                <strong>Standard Paint Included</strong><br>
-                All vehicles come with standard Silver paint at no extra cost.
-                Select "Custom Paint" if you'd like us to match a specific paint code or color.
-            </div>
-            <div class="section"><h2>Customization</h2>
-                <div class="options-grid">
-                    <div class="option-card">
-                        <label>
-                            <input
-                                    type="checkbox"
-                                    class="addon"
-                                    id="customPaint"
-                                    data-name="Custom Paint"
-                                    data-price="25000">
-                            <div>
-                                <div class="option-title">
-                                    Custom Paint Match
-                                </div>
-                                <div class="option-price">
-                                    +R25,000
-                                </div>
-                                <div class="option-description">
-                                    Match any manufacturer paint code.
+        <main>
+            <section class="section"><h2>Select Vehicles</h2>
+                <p class="section-subtitle">Use the quantity controls to select multiple Porsche 964s, multiple Shelby
+                    Cobras, or both models.</p>
+                <div class="vehicle-grid">
+                    <article class="vehicle-card"><img src="images/964.png" alt="Porsche 964">
+                        <div class="vehicle-content"><h3>Porsche 964</h3>
+                            <div class="quantity-row"><span>Quantity</span>
+                                <div class="quantity-control">
+                                    <button type="button" data-action="decrease" data-model="porsche"
+                                            aria-label="Remove one Porsche 964">−
+                                    </button>
+                                    <input class="quantity-input" id="porscheQuantity" type="number" min="0" max="10"
+                                           value="0" aria-label="Porsche 964 quantity">
+                                    <button type="button" data-action="increase" data-model="porsche"
+                                            aria-label="Add one Porsche 964">+
+                                    </button>
                                 </div>
                             </div>
-                        </label>
-                        <div
-                                id="paintCodeContainer"
-                                class="paint-code-container"
-                                style="display:none;">
-                            <label for="paintRequest">Paint Code or Color</label><input
-                                    type="text"
-                                    id="paintRequest"
-                                    name="paint_request"
-                                    placeholder="Enter paint code or color">
-                            <small>
-                                Examples:
-                                Porsche GT Silver,
-                                Ferrari Rosso Corsa,
-                            </small>
                         </div>
-                    </div>
-                    <div class="option-card">
-                        <label>
-                            <input
-                                    type="checkbox"
-                                    class="addon"
-                                    data-name="Racing Decal"
-                                    data-price="25000">
-                            <div>
-                                <div class="option-title">
-                                    Racing Decal Package
-                                </div>
-                                <div class="option-price">
-                                    +R25,000
-                                </div>
-                                <div class="option-description">
-                                    Custom motorsport graphics.
+                    </article>
+                    <article class="vehicle-card"><img src="images/shelby.png" alt="Shelby Cobra">
+                        <div class="vehicle-content"><h3>Shelby Cobra</h3>
+                            <div class="quantity-row"><span>Quantity</span>
+                                <div class="quantity-control">
+                                    <button type="button" data-action="decrease" data-model="shelby"
+                                            aria-label="Remove one Shelby Cobra">−
+                                    </button>
+                                    <input class="quantity-input" id="shelbyQuantity" type="number" min="0" max="10"
+                                           value="0" aria-label="Shelby Cobra quantity">
+                                    <button type="button" data-action="increase" data-model="shelby"
+                                            aria-label="Add one Shelby Cobra">+
+                                    </button>
                                 </div>
                             </div>
-                        </label>
-                    </div>
-                    <div class="option-card">
-                        <label>
-                            <input
-                                    type="checkbox"
-                                    class="addon"
-                                    data-name="Custom Wheels"
-                                    data-price="40000">
-                            <div>
-                                <div class="option-title">
-                                    Premium Wheels
-                                </div>
-                                <div class="option-price">
-                                    +R40,000
-                                </div>
-                            </div>
-                        </label>
-                    </div>
-                    <div class="option-card">
-                        <label>
-                            <input
-                                    type="checkbox"
-                                    class="addon"
-                                    data-name="Custom Interior"
-                                    data-price="40000">
-                            <div>
-                                <div class="option-title">
-                                    Custom Interior
-                                </div>
-                                <div class="option-price">
-                                    +R40,000
-                                </div>
-                            </div>
-                        </label>
-                    </div>
-                    <div class="option-card">
-                        <label>
-                            <input type="checkbox" class="addon" data-name="Extra Battery" data-price="25000">
-                            <div>
-                                <div class="option-title">
-                                    Extra Battery
-                                </div>
-                                <div class="option-price">
-                                    +R25,000
-                                </div>
-                            </div>
-                        </label>
-                    </div>
-                    <div class="option-card">
-                        <label>
-                            <input type="checkbox" class="addon" data-name="Duo Seating" data-price="40000">
-                            <div>
-                                <div class="option-title">
-                                    Duo Seating
-                                </div>
-                                <div class="option-price">
-                                    +R40,000
-                                </div>
-                            </div>
-                        </label>
+                        </div>
+                    </article>
+                </div>
+                <p class="validation" id="vehicleValidation">Select at least one vehicle.</p></section>
+            <section class="section"><h2>Paint and Stripe Choices</h2>
+                <p class="section-subtitle" id="configurationHelp">Select vehicle quantities above. A configuration row
+                    will appear for every vehicle.</p>
+                <div id="vehicleConfigurations"></div>
+            </section>
+            <section class="section"><h2>Extra Options</h2>
+                <p class="section-subtitle">Let us know whether you are interested in additional options. We will
+                    discuss the details with you when preparing the quote.</p>
+                <div class="choice-grid"><label class="choice"><input type="radio" name="extra_options" value="Yes"
+                                                                      required> Yes, I'm interested</label><label
+                        class="choice"><input type="radio" name="extra_options" value="No" required> No extra
+                    options</label></div>
+                <div class="subsection"><label class="field-label" for="notes">Anything else we should
+                    know?</label><textarea id="notes" name="notes"
+                                           placeholder="Optional notes about your preferred build"></textarea></div>
+            </section>
+            <section class="section"><h2>Contact Information</h2>
+                <p class="section-subtitle">We'll contact you to discuss the vehicles and provide a quotation.</p>
+                <p class="section-subtitle">NOTE: Review your submission thoroughly. Duplicate submissions are
+                    discarded.</p>
+                <div class="contact-grid">
+                    <div class="full"><label class="field-label" for="name">Full name</label><input id="name"
+                                                                                                    name="name"
+                                                                                                    type="text"
+                                                                                                    required></div>
+                    <div><label class="field-label" for="email">Email</label><input id="email" name="email" type="email"
+                                                                                    required></div>
+                    <div><label class="field-label" for="phone">Phone / WhatsApp</label><input id="phone" name="phone"
+                                                                                               type="text" required>
                     </div>
                 </div>
-                <label>
-<textarea name='notes'
-          placeholder='Additional notes'></textarea>
-                </label>
-            </div>
-            <div class="section"><h2>Contact Information</h2>
-                <p class="section-subtitle">
-                    We'll contact you to discuss your build and provide a quotation.
-                </p>
-                <label>
-                    <input class="contact-input" name="name" placeholder="Full Name" required>
-                </label>
-                <label>
-                    <input type="email" class="contact-input" name="email" placeholder="Email" required>
-                </label>
-                <label>
-                    <input class="contact-input" name="phone" placeholder="Phone / WhatsApp" required>
-                </label>
-            </div>
-            <div class="honeypot">
-                <label for="website">
-                    Leave this field empty
-                </label>
-                <input type="text" id="website" name="website" autocomplete="off" tabindex="-1">
-            </div>
+            </section>
+            <div class="honeypot"><label for="website">Leave this field empty</label><input type="text" id="website"
+                                                                                            name="website"
+                                                                                            autocomplete="off"
+                                                                                            tabindex="-1"></div>
             <input type="hidden" id="formLoadedAt">
-        </div>
-        <aside class="price-sidebar">
-            <div class="price-panel">
-                <h3>Your Build</h3>
-                <p class="sidebar-label">
-                    Estimated Price
-                </p>
-                <div class="sidebar-total" id="total">
-                </div>
-                <div class="summary" id="summary">
-                </div>
+        </main>
+        <aside class="quote-sidebar">
+            <div class="quote-panel"><h3>Your Quote Request</h3>
+                <p class="section-subtitle">Review your selections before submitting.</p>
+                <div class="summary" id="summary"></div>
                 <div class="sidebar-actions">
-                    <button
-                            type="reset"
-                            class="reset">
-                        Reset Build
-                    </button>
-                    <button
-                            type="submit"
-                            class="submit">
-                        Submit Request
-                    </button>
+                    <button type="reset" class="reset">Reset Build</button>
+                    <button type="submit" class="submit">Request a Quote</button>
                 </div>
+                <p class="sidebar-note">No payment is required when submitting. 40% deposit is required before the order
+                    is placed. Submitting this form sends us your preferences so we can contact you with a quote.</p>
             </div>
         </aside>
     </div>
 </form>
 <script>
-    let base = 155000;
-    const cards = document.querySelectorAll('.card');
-    const addons = document.querySelectorAll('.addon');
-    const total = document.getElementById('total');
-    const summary = document.getElementById('summary');
-    const vehicleField = document.getElementById('vehicleName');
-    const summaryField = document.getElementById('orderSummaryField');
+    const COLOURS = ['Red', 'Yellow', 'Green', 'Blue', 'Pink', 'Silver', 'Black', 'White', 'Custom'];
     const form = document.getElementById('orderForm');
-    const customPaint = document.getElementById('customPaint');
-    const paintContainer = document.getElementById('paintCodeContainer');
-    const paintField = document.getElementById('paintRequest');
+    const porscheQuantity = document.getElementById('porscheQuantity');
+    const shelbyQuantity = document.getElementById('shelbyQuantity');
+    const configurations = document.getElementById('vehicleConfigurations');
+    const summary = document.getElementById('summary');
+    const summaryField = document.getElementById('orderSummaryField');
+    const vehiclesField = document.getElementById('vehiclesField');
+    const vehicleValidation = document.getElementById('vehicleValidation');
+    let savedValues = {};
 
-    function getTurnstileToken() {
-        return window.turnstile && typeof window.turnstile.getResponse === 'function'
-            ? window.turnstile.getResponse()
-            : null;
+    function colourOptions() {
+        return '<option value="">Select colour</option>' + COLOURS.map(c => `<option value="${c}">${c}</option>`).join('')
     }
 
-    function update() {
-        let t = base;
-        let opts = [];
+    function saveCurrentValues() {
+        document.querySelectorAll('#vehicleConfigurations select,#vehicleConfigurations input').forEach(el => savedValues[el.id] = el.value)
+    }
 
-        addons.forEach(a => {
-            if (a.checked) {
-                t += Number(a.dataset.price);
-                opts.push(a.dataset.name);
+    function fieldValue(id) {
+        const el = document.getElementById(id);
+        return el ? el.value : ''
+    }
+
+    function createPorsche(index) {
+        const key = `porsche-${index}`;
+        return `<div class="vehicle-config" data-key="${key}"><h3>Porsche ${index}</h3><div class="config-grid"><div><label class="field-label" for="${key}-colour">Paint colour</label><select id="${key}-colour" required>${colourOptions()}</select><div id="${key}-custom-wrap" class="conditional-field hidden"><label class="field-label" for="${key}-custom">Custom paint</label><input type="text" id="${key}-custom" placeholder="Colour name or paint code"></div></div></div></div>`
+    }
+
+    function createShelby(index) {
+        const key = `shelby-${index}`;
+        return `
+    <div class="vehicle-config" data-key="${key}">
+      <h3>Shelby ${index}</h3>
+      <div class="config-grid">
+        <div class="field-group">
+        <label class="field-label" for="${key}-colour">Paint colour</label>
+        <select id="${key}-colour" required>${colourOptions()}</select>
+        </div>
+        <div class="field-group">
+        <label class="field-label" for="${key}-stripe">Stripe</label>
+        <select id="${key}-stripe" required>
+        <option value="">Select stripe option</option>
+        <option value="No stripe">No stripe</option>
+        <option value="Stripe">Stripe</option>
+        </select>
+        </div>
+
+        <div id="${key}-custom-wrap" class="conditional-field hidden">
+        <label class="field-label" for="${key}-custom">Custom paint</label>
+        <input type="text" id="${key}-custom" placeholder="Colour name or paint code">
+        </div>
+        <div id="${key}-stripe-colour-wrap" class="conditional-field hidden">
+        <label class="field-label" for="${key}-stripe-colour">Stripe colour</label>
+        <input type="text" id="${key}-stripe-colour" placeholder="Enter stripe colour">
+        </div>
+        </div>
+        </div>
+        `
+            ;
+    }
+
+    function restoreValues() {
+        Object.entries(savedValues).forEach(([id, value]) => {
+            const el = document.getElementById(id);
+            if (el) el.value = value
+        })
+    }
+
+    function updateConditionalFields() {
+        document.querySelectorAll('.vehicle-config').forEach(block => {
+            const key = block.dataset.key;
+            const colour = document.getElementById(
+                `${key}-colour`
+            );
+            const custom = document.getElementById(
+                `${key}-custom`
+            );
+            const customWrap = document.getElementById(
+                `${key}-custom-wrap`
+            );
+            const isCustom = colour && colour.value === 'Custom';
+            customWrap?.classList.toggle('hidden', !isCustom);
+            if (custom) {
+                custom.required = isCustom;
+                if (!isCustom) custom.value = ''
             }
-        });
-
-        total.textContent = 'R' + t.toLocaleString();
-
-        let txt =
-            'Vehicle: ' + (vehicleField.value || 'None') + '\nSelected Options:\n' + (opts.join('\n') || 'None') + '\nTotal: R' + t.toLocaleString();
-
-        summary.textContent = txt;
-        summaryField.value = txt;
+            const stripe = document.getElementById(
+                `${key}-stripe`
+            );
+            const stripeColour = document.getElementById(
+                `${key}-stripe-colour`
+            );
+            const stripeWrap = document.getElementById(
+                `${key}-stripe-colour-wrap`
+            );
+            const hasStripe = stripe && stripe.value === 'Stripe';
+            stripeWrap?.classList.toggle('hidden', !hasStripe);
+            if (stripeColour) {
+                stripeColour.required = hasStripe;
+                if (!hasStripe) stripeColour.value = ''
+            }
+        })
     }
+
+    function renderConfigurations() {
+        saveCurrentValues();
+        let html = '';
+        for (let i = 1; i <= Number(porscheQuantity.value); i++) html += createPorsche(i);
+        for (let i = 1; i <= Number(shelbyQuantity.value); i++) html += createShelby(i);
+        configurations.innerHTML = html || '<p class="section-subtitle">No vehicles selected yet.</p>';
+        restoreValues();
+        updateConditionalFields();
+        updateSummary()
+    }
+
+    function getVehicles() {
+        const list = [];
+        for (let i = 1; i <= Number(porscheQuantity.value); i++) {
+            const colour = fieldValue(
+                `porsche-${i}-colour`
+            );
+            const custom = fieldValue(
+                `porsche-${i}-custom`
+            );
+            list.push({
+                label:
+                    `Porsche ${i}`
+                ,
+                model: 'Porsche 964',
+                paint: colour,
+                customPaint: colour === 'Custom' ? custom : ''
+            })
+        }
+        for (let i = 1; i <= Number(shelbyQuantity.value); i++) {
+            const colour = fieldValue(
+                `shelby-${i}-colour`
+            );
+            const custom = fieldValue(
+                `shelby-${i}-custom`
+            );
+            const stripe = fieldValue(
+                `shelby-${i}-stripe`
+            );
+            const stripeColour = fieldValue(
+                `shelby-${i}-stripe-colour`
+            );
+            list.push({
+                label:
+                    `Shelby ${i}`
+                ,
+                model: 'Shelby Cobra',
+                paint: colour,
+                customPaint: colour === 'Custom' ? custom : '',
+                stripe: stripe,
+                stripeColour: stripe === 'Stripe' ? stripeColour : ''
+            })
+        }
+        return list
+    }
+
+    function updateSummary() {
+        updateConditionalFields();
+        const vehicles = getVehicles();
+        const lines = [];
+        vehicles.forEach(v => {
+            lines.push(v.label);
+            lines.push(
+                `  Paint: ${v.paint || 'Not selected'}${v.customPaint ? ' - ' + v.customPaint : ''}`
+            );
+            if (v.model === 'Shelby Cobra') lines.push(
+                `  Stripe: ${v.stripe || 'Not selected'}${v.stripeColour ? ' - ' + v.stripeColour : ''}`
+            )
+        });
+        const extras = form.querySelector('input[name="extra_options"]:checked');
+        lines.push('');
+        lines.push(
+            `Extra options: ${extras ? extras.value : 'Not selected'}`
+        );
+        summary.textContent = vehicles.length ? lines.join('\n') : 'No vehicles selected.';
+        summaryField.value = summary.textContent;
+        vehiclesField.value = JSON.stringify(vehicles)
+    }
+
+    document.querySelectorAll('.quantity-control button').forEach(btn => btn.addEventListener('click', () => {
+        const input = btn.dataset.model === 'porsche' ? porscheQuantity : shelbyQuantity;
+        const change = btn.dataset.action === 'increase' ? 1 : -1;
+        input.value = Math.max(0, Math.min(10, Number(input.value) + change));
+        renderConfigurations()
+    }));
+    [porscheQuantity, shelbyQuantity].forEach(input => input.addEventListener('change', () => {
+        input.value = Math.max(0, Math.min(10, Number(input.value) || 0));
+        renderConfigurations()
+    }));
+    configurations.addEventListener('change', updateSummary);
+    configurations.addEventListener('input', updateSummary);
+    form.addEventListener('change', updateSummary);
 
     function resetBuilder() {
         form.reset();
-
-        cards.forEach(x => x.classList.remove('selected'));
-        cards[0].classList.add('selected');
-
-        base = Number(cards[0].dataset.price);
-        vehicleField.value = cards[0].dataset.name;
-
-        addons.forEach(a => {
-            a.checked = false;
-        });
-
-        customPaint.checked = false;
-        paintContainer.style.display = 'none';
-        paintField.required = false;
-        paintField.value = '';
-
-        update();
+        savedValues = {};
+        porscheQuantity.value = 0;
+        shelbyQuantity.value = 0;
+        document.getElementById('formLoadedAt').value = Date.now();
+        vehicleValidation.style.display = 'none';
+        renderConfigurations()
     }
 
-    window.onload = function () {
+    document.querySelector('.reset').addEventListener('click', e => {
+        e.preventDefault();
+        if (confirm('Reset configuration?')) resetBuilder()
+    });
+
+    function getTurnstileToken() {
+        return window.turnstile && typeof window.turnstile.getResponse === 'function' ? window.turnstile.getResponse() : null
+    }
+
+    function turnstileVerified() {
         const modal = document.getElementById('verificationModal');
-        if (sessionStorage.getItem('verified') === 'true' && modal) {
-            modal.style.display = 'none';
-        }
-    };
-
-    function turnstileVerified(token) {
-        const modal = document.getElementById('verificationModal');
-
-        sessionStorage.setItem('verified', 'true');
-
         if (modal) {
             modal.style.opacity = '0';
             modal.style.pointerEvents = 'none';
+            setTimeout(() => modal.style.display = 'none', 400)
         }
     }
 
-    cards.forEach(c => c.addEventListener('click', () => {
-        cards.forEach(x => x.classList.remove('selected'));
-        c.classList.add('selected');
-        base = Number(c.dataset.price);
-        vehicleField.value = c.dataset.name;
-        update();
-    }));
-
-    addons.forEach(a => a.addEventListener('change', update));
-
-    document.querySelector('button[type=reset]').addEventListener('click', e => {
-        if (!confirm('Reset configuration?')) {
-            e.preventDefault();
-            return;
-        }
-
-        resetBuilder();
-    });
-
-    customPaint.addEventListener('change', function () {
-        if (this.checked) {
-            paintContainer.style.display = 'block';
-            paintField.required = true;
-        } else {
-            paintContainer.style.display = 'none';
-            paintField.required = false;
-            paintField.value = '';
-        }
-    });
-
-    document.getElementById('formLoadedAt').value = Date.now();
-
-    form.addEventListener('submit', async function (e) {
+    form.addEventListener('submit', async e => {
         e.preventDefault();
-
+        const vehicles = getVehicles();
+        if (!vehicles.length) {
+            vehicleValidation.style.display = 'block';
+            document.querySelector('.vehicle-grid').scrollIntoView({behavior: 'smooth'});
+            return
+        }
+        vehicleValidation.style.display = 'none';
+        if (!form.reportValidity()) return;
         const token = getTurnstileToken();
-
         if (!token) {
             alert('Please complete verification.');
-            return;
+            return
         }
-
+        updateSummary();
         const payload = {
             name: form.name.value,
             email: form.email.value,
             phone: form.phone.value,
-            vehicle: vehicleField.value,
-            options: summary.textContent,
-            paintRequest: paintField.value,
+            vehicles: JSON.stringify(vehicles),
+            vehicleSummary: summary.textContent,
+            extraOptions: form.extra_options.value,
             notes: form.notes.value,
-            total: total.textContent,
             website: document.getElementById('website').value,
             loadedAt: document.getElementById('formLoadedAt').value,
             turnstileToken: token
         };
-
-        const formData = new FormData();
-
-        Object.entries(payload).forEach(
-            ([key, value]) => {
-                formData.append(key, value);
-            }
-        );
-
-        await fetch(
-            "https://script.google.com/macros/s/AKfycbwvylPuiD9r709Srs3RU48fzx9ML8rjKV_GTp2ROhY8oi1VTwIdTFwOEctqAKzMloyk/exec",
-            {
-                method: "POST",
-                mode: "no-cors",
-                body: formData
-            }
-        );
-
-        alert("Order request submitted.");
-
-        resetBuilder();
+        const fd = new FormData();
+        Object.entries(payload).forEach(([k, v]) => fd.append(k, v));
+        await fetch('https://script.google.com/macros/s/AKfycbwvylPuiD9r709Srs3RU48fzx9ML8rjKV_GTp2ROhY8oi1VTwIdTFwOEctqAKzMloyk/exec', {
+            method: 'POST',
+            mode: 'no-cors',
+            body: fd
+        });
+        alert('Quote request submitted.');
+        resetBuilder()
     });
-
-    cards.forEach(x => x.classList.remove('selected'));
-    cards[0].classList.add('selected');
-    base = Number(cards[0].dataset.price);
-    vehicleField.value = cards[0].dataset.name;
-    update();
+    document.getElementById('formLoadedAt').value = Date.now();
+    renderConfigurations();
 </script>
 </body>
 </html>
